@@ -61,7 +61,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 660px;
+      min-height: 670px;
       justify-content: center;
     }
 
@@ -97,7 +97,7 @@
     }
 
     .envelope-box.open {
-      transform: translateY(150px);
+      transform: translateY(155px);
     }
 
     /* 1. Back Wall */
@@ -302,7 +302,7 @@
 
     .envelope-box.open .invitation-card {
       opacity: 1;
-      transform: translateY(-280px) scale(1);
+      transform: translateY(-285px) scale(1);
       pointer-events: auto;
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
     }
@@ -345,7 +345,7 @@
 
     /* Card Body */
     .card-body {
-      padding: 18px 16px;
+      padding: 16px 14px;
       background: #ffffff;
       text-align: center;
       display: flex;
@@ -354,10 +354,10 @@
 
     /* Main Invitation Statement */
     .invitation-statement {
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       line-height: 1.55;
       color: #1f2937;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       font-weight: 500;
     }
 
@@ -374,8 +374,8 @@
     .event-details {
       background: #f8fafc;
       border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 14px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
       text-align: left;
       font-size: 0.78rem;
       border: 1px solid #edf2f7;
@@ -394,18 +394,31 @@
       margin-bottom: 0;
     }
 
-    /* Bottom Poem Box (Утасны дугаарын оронд орсон) */
+    /* Bottom Poem & Greeting Box */
     .bottom-poem-box {
       background: #f1f5f9;
       border-radius: 10px;
-      padding: 12px 10px;
+      padding: 10px 10px;
       text-align: center;
-      font-size: 0.76rem;
-      line-height: 1.6;
-      color: var(--navy);
-      font-weight: 600;
-      font-style: italic;
       border: 1px solid #e2e8f0;
+    }
+
+    .poem-lines {
+      font-size: 0.74rem;
+      line-height: 1.5;
+      color: #334155;
+      font-style: italic;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .poem-greeting {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: 0.3px;
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 6px;
     }
 
     @media (max-width: 480px) {
@@ -418,10 +431,10 @@
         left: 15px;
       }
       .envelope-box.open .invitation-card {
-        transform: translateY(-255px) scale(1);
+        transform: translateY(-265px) scale(1);
       }
       .envelope-box.open {
-        transform: translateY(130px);
+        transform: translateY(135px);
       }
     }
   </style>
@@ -497,10 +510,15 @@
             </div>
           </div>
 
-          <!-- Утасны дугаарын оронд орсон шүлэг -->
+          <!-- Шүлэг ба Баярын мэндчилгээ -->
           <div class="bottom-poem-box">
-            “Алган дээр од тавьдаг шидтэн юм та<br>
-            Амьдралд оч харвуулдаг хүчтэн юм та”
+            <div class="poem-lines">
+              “Алган дээр од тавьдаг шидтэн юм та<br>
+              Амьдралд оч харвуулдаг хүчтэн юм та”
+            </div>
+            <div class="poem-greeting">
+              💐 Багш нарын баярын мэнд хүргэе! 💐
+            </div>
           </div>
         </div>
       </div>
