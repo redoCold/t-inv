@@ -91,7 +91,7 @@
       transition: transform 0.8s cubic-bezier(0.34, 1.1, 0.64, 1);
     }
 
-    /* When OPEN: Envelope shifts down so the card has ample vertical space */
+    /* Shift down when opened */
     .envelope-box.open {
       transform: translateY(140px);
     }
@@ -106,7 +106,7 @@
       z-index: 1;
     }
 
-    /* 2. Flap Wrapper with 3D Flip */
+    /* 2. Flap Wrapper */
     .flap-container {
       position: absolute;
       top: 0;
@@ -114,13 +114,13 @@
       width: 100%;
       height: 125px;
       perspective: 900px;
-      z-index: 8; /* On top when closed */
+      z-index: 8;
       pointer-events: none;
       transition: z-index 0s 0.3s;
     }
 
     .envelope-box.open .flap-container {
-      z-index: 2; /* Drops safely behind the card when opened */
+      z-index: 2;
     }
 
     .flap {
@@ -146,13 +146,11 @@
       -webkit-backface-visibility: hidden;
     }
 
-    /* Yellow face when closed */
     .flap-front {
       background: var(--envelope-color);
       border-radius: 14px 14px 0 0;
     }
 
-    /* Navy liner face when flipped open */
     .flap-back {
       background: var(--envelope-color);
       transform: rotateY(180deg);
@@ -189,25 +187,75 @@
       opacity: 0.35;
     }
 
-    /* Stamps & Text on Closed Envelope */
-    .envelope-seal {
+    /* 4. Realistic Postage Stamp & Postmark */
+    .stamp-cluster {
       position: absolute;
-      top: 18px;
-      right: 20px;
-      width: 44px;
-      height: 44px;
-      border: 2px dashed rgba(0,0,0,0.3);
+      top: 14px;
+      right: 18px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      font-weight: 800;
-      color: #333;
-      transform: rotate(5deg);
-      z-index: 6;
-      background: #fff;
-      border-radius: 4px;
+      gap: 6px;
+      z-index: 10; /* Нугалаасны дээгүүр бүрэн ил гарна */
       transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    /* Circular Postmark (Шуудангийн тамга) */
+    .postmark {
+      width: 38px;
+      height: 38px;
+      border: 1.5px dashed rgba(60, 60, 60, 0.45);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 6px;
+      font-weight: 800;
+      color: rgba(60, 60, 60, 0.6);
+      transform: rotate(-12deg);
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    /* Stamp (Марк) */
+    .envelope-seal {
+      width: 42px;
+      height: 48px;
+      background: #ffffff;
+      border: 1px dashed #94a3b8;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      transform: rotate(4deg);
+      border-radius: 2px;
+    }
+
+    .seal-inner {
+      width: 100%;
+      height: 100%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .seal-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .seal-text {
+      font-size: 6px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--navy);
+      margin-top: 2px;
     }
 
     .envelope-label {
@@ -218,18 +266,18 @@
       font-size: 0.82rem;
       font-weight: 700;
       color: rgba(30, 30, 30, 0.85);
-      z-index: 6;
+      z-index: 10;
       text-align: center;
       pointer-events: none;
       transition: opacity 0.3s;
     }
 
-    .envelope-box.open .envelope-seal,
+    .envelope-box.open .stamp-cluster,
     .envelope-box.open .envelope-label {
       opacity: 0;
     }
 
-    /* 4. Invitation Card */
+    /* 5. Invitation Card */
     .invitation-card {
       position: absolute;
       left: 15px;
@@ -241,7 +289,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      z-index: 6; /* In front of open flap and background pocket */
+      z-index: 6;
       opacity: 0;
       transform: translateY(20px) scale(0.95);
       pointer-events: none;
@@ -250,7 +298,7 @@
                   box-shadow 0.4s ease;
     }
 
-    /* Opened state: Card slides up fully into view */
+    /* Slide up on open */
     .envelope-box.open .invitation-card {
       opacity: 1;
       transform: translateY(-270px) scale(1);
@@ -258,7 +306,6 @@
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
     }
 
-    /* Card Cover Header */
     .card-top-cover {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
       color: #ffffff;
@@ -294,7 +341,6 @@
       font-weight: 700;
     }
 
-    /* Card Content Body */
     .card-body {
       padding: 16px;
       background: #ffffff;
@@ -345,7 +391,6 @@
       margin-bottom: 0;
     }
 
-    /* Contact Phone */
     .contact-box {
       background: #f1f5f9;
       border-radius: 8px;
@@ -373,15 +418,11 @@
       background: #ffffff;
       border-radius: 6px;
       border: 1px solid #cbd5e1;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.2s;
     }
 
     .contact-link:hover {
       background: #f8fafc;
-    }
-
-    .contact-link:active {
-      transform: scale(0.97);
     }
 
     @media (max-width: 480px) {
@@ -413,7 +454,7 @@
       <!-- 1. Back Wall -->
       <div class="envelope-back"></div>
 
-      <!-- 2. Flap with clean 3D Orientation -->
+      <!-- 2. Flap -->
       <div class="flap-container">
         <div class="flap">
           <div class="flap-face flap-front"></div>
@@ -426,10 +467,24 @@
       <!-- 3. Front Pocket -->
       <div class="envelope-pocket"></div>
       <div class="envelope-pocket-shade"></div>
-      <div class="envelope-seal">POST</div>
+
+      <!-- 4. Stamp & Postmark (z-index: 10 учир дарагдахгүй) -->
+      <div class="stamp-cluster">
+        <div class="postmark">
+          <span>POST</span>
+          <span>2026</span>
+        </div>
+        <div class="envelope-seal">
+          <div class="seal-inner">
+            <span class="seal-icon">🕊️</span>
+            <span class="seal-text">AIR MAIL</span>
+          </div>
+        </div>
+      </div>
+
       <div class="envelope-label">ЦСА-гийн хамт олноос</div>
 
-      <!-- 4. Invitation Card -->
+      <!-- 5. Invitation Card -->
       <div class="invitation-card">
         <div class="card-top-cover">
           <div class="badge-logo">M</div>
@@ -474,7 +529,7 @@
   </div>
 
   <script>
-    // Confetti Dots Animation
+    // Confetti Animation
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
     let width, height, dots = [];
@@ -525,7 +580,7 @@
     initDots();
     renderDots();
 
-    // Envelope Open / Close Logic
+    // Envelope Logic
     const envelope = document.getElementById('envelope');
     const toggleHint = document.getElementById('toggleHint');
     let isOpen = false;
