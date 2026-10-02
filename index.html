@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Багш нарын баярын урилга</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --envelope-color: #f7c948;
+      --envelope-dark: #dfae26;
+      --envelope-shadow: rgba(0, 0, 0, 0.14);
+      --card-bg: #ffffff;
+      --navy: #1f2747;
+      --navy-light: #2b3970;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      background: #fafafa;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 30px 10px;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Scene Container */
+    .scene {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 640px;
+      justify-content: center;
+    }
+
+    .hint-tap {
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #2d3748;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      padding: 10px 22px;
+      border-radius: 999px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .hint-tap:hover {
+      transform: scale(1.03);
+      background: #ffffff;
+    }
+
+    /* Envelope Box */
+    .envelope-box {
+      position: relative;
+      width: 330px;
+      height: 220px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.8s cubic-bezier(0.34, 1.1, 0.64, 1);
+    }
+
+    /* When OPEN: Envelope shifts down so the card has ample vertical space */
+    .envelope-box.open {
+      transform: translateY(140px);
+    }
+
+    /* 1. Envelope Back Wall */
+    .envelope-back {
+      position: absolute;
+      inset: 0;
+      background: var(--envelope-dark);
+      border-radius: 14px;
+      box-shadow: 0 16px 36px var(--envelope-shadow);
+      z-index: 1;
+    }
+
+    /* 2. Flap Wrapper with 3D Flip */
+    .flap-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 125px;
+      perspective: 900px;
+      z-index: 8; /* On top when closed */
+      pointer-events: none;
+      transition: z-index 0s 0.3s;
+    }
+
+    .envelope-box.open .flap-container {
+      z-index: 2; /* Drops safely behind the card when opened */
+    }
+
+    .flap {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-origin: top center;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .envelope-box.open .flap {
+      transform: rotateX(180deg);
+    }
+
+    .flap-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    /* Yellow face when closed */
+    .flap-front {
+      background: var(--envelope-color);
+      border-radius: 14px 14px 0 0;
+    }
+
+    /* Navy liner face when flipped open */
+    .flap-back {
+      background: var(--envelope-color);
+      transform: rotateY(180deg);
+      border-radius: 14px 14px 0 0;
+    }
+
+    .flap-back-liner {
+      position: absolute;
+      top: 0;
+      left: 6%;
+      width: 88%;
+      height: 88%;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background: var(--navy);
+    }
+
+    /* 3. Front Pocket */
+    .envelope-pocket {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+      background: var(--envelope-color);
+      border-radius: 14px;
+      z-index: 4;
+    }
+
+    .envelope-pocket-shade {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 0, 50% 50%, 0 100%);
+      background: #dfae26;
+      border-radius: 14px 0 0 14px;
+      z-index: 4;
+      opacity: 0.35;
+    }
+
+    /* Stamps & Text on Closed Envelope */
+    .envelope-seal {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border: 2px dashed rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 800;
+      color: #333;
+      transform: rotate(5deg);
+      z-index: 6;
+      background: #fff;
+      border-radius: 4px;
+      transition: opacity 0.3s;
+    }
+
+    .envelope-label {
+      position: absolute;
+      bottom: 22px;
+      left: 20px;
+      right: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: rgba(30, 30, 30, 0.85);
+      z-index: 6;
+      text-align: center;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .envelope-box.open .envelope-seal,
+    .envelope-box.open .envelope-label {
+      opacity: 0;
+    }
+
+    /* 4. Invitation Card */
+    .invitation-card {
+      position: absolute;
+      left: 15px;
+      top: 10px;
+      width: 300px;
+      background: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 6; /* In front of open flap and background pocket */
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      pointer-events: none;
+      transition: transform 0.85s cubic-bezier(0.25, 1, 0.5, 1) 0.1s,
+                  opacity 0.4s ease 0.1s,
+                  box-shadow 0.4s ease;
+    }
+
+    /* Opened state: Card slides up fully into view */
+    .envelope-box.open .invitation-card {
+      opacity: 1;
+      transform: translateY(-270px) scale(1);
+      pointer-events: auto;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
+    }
+
+    /* Card Cover Header */
+    .card-top-cover {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: #ffffff;
+      padding: 18px 14px;
+      text-align: center;
+    }
+
+    .badge-logo {
+      display: inline-block;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #ffffff;
+      color: var(--navy);
+      font-weight: 900;
+      font-size: 19px;
+      line-height: 42px;
+      margin-bottom: 8px;
+    }
+
+    .card-top-cover h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      margin-bottom: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .card-top-cover p {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      opacity: 0.9;
+      font-weight: 700;
+    }
+
+    /* Card Content Body */
+    .card-body {
+      padding: 16px;
+      background: #ffffff;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-poem {
+      font-size: 0.72rem;
+      line-height: 1.55;
+      color: #4a5568;
+      font-style: italic;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .recipient-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .event-details {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      text-align: left;
+      font-size: 0.78rem;
+      border: 1px solid #edf2f7;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    .detail-row:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Contact Phone */
+    .contact-box {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .contact-title {
+      font-size: 0.68rem;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+      padding: 6px 14px;
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .contact-link:hover {
+      background: #f8fafc;
+    }
+
+    .contact-link:active {
+      transform: scale(0.97);
+    }
+
+    @media (max-width: 480px) {
+      .envelope-box {
+        width: 300px;
+        height: 200px;
+      }
+      .invitation-card {
+        width: 270px;
+        left: 15px;
+      }
+      .envelope-box.open .invitation-card {
+        transform: translateY(-250px) scale(1);
+      }
+      .envelope-box.open {
+        transform: translateY(120px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="scene">
+    <div class="hint-tap" id="toggleHint">✉️ Урилга үзэх (Дарна уу)</div>
+
+    <div class="envelope-box" id="envelope">
+      <!-- 1. Back Wall -->
+      <div class="envelope-back"></div>
+
+      <!-- 2. Flap with clean 3D Orientation -->
+      <div class="flap-container">
+        <div class="flap">
+          <div class="flap-face flap-front"></div>
+          <div class="flap-face flap-back">
+            <div class="flap-back-liner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Front Pocket -->
+      <div class="envelope-pocket"></div>
+      <div class="envelope-pocket-shade"></div>
+      <div class="envelope-seal">POST</div>
+      <div class="envelope-label">ЦСА-гийн хамт олноос</div>
+
+      <!-- 4. Invitation Card -->
+      <div class="invitation-card">
+        <div class="card-top-cover">
+          <div class="badge-logo">M</div>
+          <h1>Нийт багш нар</h1>
+          <p>ЦСА-ГИЙН ХАМТ ОЛНООС</p>
+        </div>
+
+        <div class="card-body">
+          <div class="card-poem">
+            “Гэгээн оюуны нарыг шавь нарынхаа сэтгэлд бадрааж,<br>
+            гэрэлт ирээдүйн замыг заан зуучилсан<br>
+            багш нарын баярын энэ өдөр<br>
+            тандаа хүндэтгэлтэйгээр урилга илгээе.”
+          </div>
+
+          <div class="recipient-text">Эрхэм хүндэт таныг урьж байна</div>
+
+          <div class="event-details">
+            <div class="detail-row">
+              <span>📍</span>
+              <span>Sample Main Hall</span>
+            </div>
+            <div class="detail-row">
+              <span>🕒</span>
+              <span>13:00 цагт</span>
+            </div>
+            <div class="detail-row">
+              <span>📅</span>
+              <span>2026 оны 10 сарын 05</span>
+            </div>
+          </div>
+
+          <div class="contact-box">
+            <div class="contact-title">Дэлгэрэнгүй мэдээлэл авах бол:</div>
+            <a href="tel:+97699112233" class="contact-link" onclick="event.stopPropagation()">
+              📞 9911-2233
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Confetti Dots Animation
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, dots = [];
+    const colors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    function initDots() {
+      dots = [];
+      const count = Math.floor((width * height) / 12000);
+      for (let i = 0; i < count; i++) {
+        dots.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 5 + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: Math.random() * 0.5 + 0.3,
+          opacity: Math.random() * 0.5 + 0.3
+        });
+      }
+    }
+
+    function renderDots() {
+      ctx.clearRect(0, 0, width, height);
+      for (let d of dots) {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+        ctx.fillStyle = d.color;
+        ctx.globalAlpha = d.opacity;
+        ctx.fill();
+
+        d.x += d.vx;
+        d.y += d.vy;
+
+        if (d.y > height + 10) d.y = -10;
+        if (d.x > width + 10) d.x = -10;
+        if (d.x < -10) d.x = width + 10;
+      }
+      requestAnimationFrame(renderDots);
+    }
+
+    window.addEventListener('resize', () => { resize(); initDots(); });
+    resize();
+    initDots();
+    renderDots();
+
+    // Envelope Open / Close Logic
+    const envelope = document.getElementById('envelope');
+    const toggleHint = document.getElementById('toggleHint');
+    let isOpen = false;
+
+    function toggleEnvelope() {
+      isOpen = !isOpen;
+      if (isOpen) {
+        envelope.classList.add('open');
+        toggleHint.textContent = "Хаах бол дахин дарна уу";
+      } else {
+        envelope.classList.remove('open');
+        toggleHint.textContent = "✉️ Урилга үзэх (Дарна уу)";
+      }
+    }
+
+    envelope.addEventListener('click', toggleEnvelope);
+    toggleHint.addEventListener('click', toggleEnvelope);
+  </script>
+</body>
+</html>
