@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Багш нарын баярын урилга</title>
+  
+  <!-- Сошиал сувгаар илгээхэд карт болж харагдах тохиргоо -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Багш нарын баярын урилга ✉️" />
+  <meta property="og:description" content="Нийт багш нартаа — 12-р ангийн сурагчдаас" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
@@ -56,7 +62,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 640px;
+      min-height: 680px;
       justify-content: center;
     }
 
@@ -88,12 +94,12 @@
       height: 220px;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.8s cubic-bezier(0.34, 1.1, 0.64, 1);
+      transition: transform 0.85s cubic-bezier(0.34, 1.1, 0.64, 1);
     }
 
-    /* Shift down when opened */
+    /* Shift down when opened so the card stays centered */
     .envelope-box.open {
-      transform: translateY(140px);
+      transform: translateY(160px);
     }
 
     /* 1. Envelope Back Wall */
@@ -106,7 +112,7 @@
       z-index: 1;
     }
 
-    /* 2. Flap Wrapper */
+    /* 2. Flap */
     .flap-container {
       position: absolute;
       top: 0;
@@ -187,7 +193,7 @@
       opacity: 0.35;
     }
 
-    /* 4. Realistic Postage Stamp & Postmark */
+    /* 4. Postage Stamp & Postmark */
     .stamp-cluster {
       position: absolute;
       top: 14px;
@@ -195,12 +201,11 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      z-index: 10; /* Нугалаасны дээгүүр бүрэн ил гарна */
+      z-index: 10;
       transition: opacity 0.3s;
       pointer-events: none;
     }
 
-    /* Circular Postmark (Шуудангийн тамга) */
     .postmark {
       width: 38px;
       height: 38px;
@@ -218,7 +223,6 @@
       text-transform: uppercase;
     }
 
-    /* Stamp (Марк) */
     .envelope-seal {
       width: 42px;
       height: 48px;
@@ -298,49 +302,51 @@
                   box-shadow 0.4s ease;
     }
 
-    /* Slide up on open */
+    /* Slides up when open */
     .envelope-box.open .invitation-card {
       opacity: 1;
-      transform: translateY(-270px) scale(1);
+      transform: translateY(-290px) scale(1);
       pointer-events: auto;
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
     }
 
+    /* Card Cover Header with MIU Logo */
     .card-top-cover {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
       color: #ffffff;
-      padding: 18px 14px;
+      padding: 18px 14px 14px 14px;
       text-align: center;
     }
 
-    .badge-logo {
-      display: inline-block;
-      width: 42px;
-      height: 42px;
+    .badge-logo-img {
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
       background: #ffffff;
-      color: var(--navy);
-      font-weight: 900;
-      font-size: 19px;
-      line-height: 42px;
+      object-fit: cover;
+      padding: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       margin-bottom: 8px;
+      display: inline-block;
     }
 
     .card-top-cover h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      margin-bottom: 2px;
+      font-size: 1.38rem;
+      margin-bottom: 3px;
       letter-spacing: 0.5px;
+      font-weight: 700;
     }
 
     .card-top-cover p {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 1.2px;
       opacity: 0.9;
       font-weight: 700;
     }
 
+    /* Card Body */
     .card-body {
       padding: 16px;
       background: #ffffff;
@@ -349,8 +355,9 @@
       flex-direction: column;
     }
 
+    /* Teacher's Poem */
     .card-poem {
-      font-size: 0.72rem;
+      font-size: 0.76rem;
       line-height: 1.55;
       color: #4a5568;
       font-style: italic;
@@ -359,12 +366,21 @@
       padding-bottom: 10px;
     }
 
-    .recipient-text {
-      font-size: 0.85rem;
-      font-weight: 700;
+    /* Highlighted Main Invitation */
+    .invitation-statement {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: #1f2937;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .highlight-bold {
+      font-size: 1.1rem;
+      font-weight: 800;
       color: var(--navy);
-      margin-bottom: 10px;
-      text-transform: uppercase;
+      display: inline;
+      font-family: 'Playfair Display', serif;
       letter-spacing: 0.5px;
     }
 
@@ -391,6 +407,7 @@
       margin-bottom: 0;
     }
 
+    /* Contact Section */
     .contact-box {
       background: #f1f5f9;
       border-radius: 8px;
@@ -418,11 +435,15 @@
       background: #ffffff;
       border-radius: 6px;
       border: 1px solid #cbd5e1;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.1s;
     }
 
     .contact-link:hover {
       background: #f8fafc;
+    }
+
+    .contact-link:active {
+      transform: scale(0.97);
     }
 
     @media (max-width: 480px) {
@@ -435,10 +456,10 @@
         left: 15px;
       }
       .envelope-box.open .invitation-card {
-        transform: translateY(-250px) scale(1);
+        transform: translateY(-265px) scale(1);
       }
       .envelope-box.open {
-        transform: translateY(120px);
+        transform: translateY(135px);
       }
     }
   </style>
@@ -468,7 +489,7 @@
       <div class="envelope-pocket"></div>
       <div class="envelope-pocket-shade"></div>
 
-      <!-- 4. Stamp & Postmark (z-index: 10 учир дарагдахгүй) -->
+      <!-- 4. Stamp & Postmark -->
       <div class="stamp-cluster">
         <div class="postmark">
           <span>POST</span>
@@ -482,30 +503,33 @@
         </div>
       </div>
 
-      <div class="envelope-label">12 А, Б ангийн хамт олон</div>
+      <!-- Envelope Front Text -->
+      <div class="envelope-label">12-р ангийн сурагчид</div>
 
       <!-- 5. Invitation Card -->
       <div class="invitation-card">
+        <!-- Card Top Header -->
         <div class="card-top-cover">
-          <div class="badge-logo">M</div>
-          <h1>Нийт багш нар</h1>
-          <p>12 А, Б ангийн хамт олон</p>
+          <img src="logo.png" alt="MIU Logo" class="badge-logo-img">
+          <h1>Нийт багш нартаа</h1>
+          <p>12-Р АНГИЙН СУРАГЧИД</p>
         </div>
 
+        <!-- Card Inner Content -->
         <div class="card-body">
           <div class="card-poem">
-            “Гэгээн оюуны нарыг шавь нарынхаа сэтгэлд бадрааж,<br>
-            гэрэлт ирээдүйн замыг заан зуучилсан<br>
-            багш нарын баярын энэ өдөр<br>
-            тандаа хүндэтгэлтэйгээр урилга илгээе.”
+            “Алган дээр од тавьдаг шидтэн юм та<br>
+            Амьдралд оч харвуулдаг хүчтэн юм та”
           </div>
 
-          <div class="recipient-text">Эрхэм хүндэт таныг урьж байна</div>
+          <div class="invitation-statement">
+            <span class="highlight-bold">Гэрэлт</span> ирээдүйн замыг гэрэлтүүлсэн эрдэмт багш таныг хүндэтгэлийн арга хэмжээнд хүрэлцэн ирэхийг урьж байна.
+          </div>
 
           <div class="event-details">
             <div class="detail-row">
               <span>📍</span>
-              <span>Sample Main Hall</span>
+              <span>Main Hall</span>
             </div>
             <div class="detail-row">
               <span>🕒</span>
